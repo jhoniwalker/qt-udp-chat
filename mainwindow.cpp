@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QUdpSocket>
+#include <QMessageBox>
+#include <QHostInfo>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -11,14 +13,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("UDP SOCKET CHAT");
 
     myUdpSocket = new QUdpSocket(this);
-    //myUdpSocket->bind(localhost, localport);
+    myUdpSocket->bind(QHostAddress::LocalHost, 7755);
 
     //se hace una conección con el socket y la señal listo para leer
-    //connect(udosocket, SIGNAL(readyRead()),this,SLOT(readSocket()));
+    connect(myUdpSocket, SIGNAL(readyRead()),this,SLOT(readSocket()));
 
     //seteo el editor de texto plano para que sea de solo lectura.
     ui->receivedMessages->setReadOnly(true);
-    connect(ui->lineEdit,SIGNAL(returnPresse()),this,SLOT(on_sendButton_clicked()))
+    connect(ui->message,SIGNAL(returnPresse()),this,SLOT(on_sendButton_clicked()));
 
 
 
@@ -37,29 +39,46 @@ void MainWindow::readSocket()
         QByteArray datagram;
 
         //se redimensiona el buffr con el tamaño de los datagrama entrantes
-        datagram.resize(myUdpsocket->pendingDatagramSize());
+        datagram.resize(myUdpSocket->pendingDatagramSize());
 
         //direccion que envia los datos
         QHostAddress sender;
 
         //puerto vinculado a la dirección que envia los datos
-        quintl6 senderPort;
+        quint16 senderPort;
 
         //lectura de datos
-        myUdpsocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+        myUdpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
         //se despliega la información en el texto plano
-
-        ui->receivedMessages->appendPlainText(QString(datagram)+"(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" )
+        ui->receivedMessages->appendPlainText(QString(datagram)+"(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" );
     }
 }
 
 void MainWindow::on_connectButton_clicked()
 {
+    //------------
+    QList <QHostAddress> list = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
+       for (int i = 0; i < list.size(); i++)
+          qDebug() << list.at(i).toString();
+    //-------------------------
+   //hago la conexion
+   if(ui->ipAddress->text().isEmpty()){
+
+         QMessageBox::critical(this, "Error", "Complete el campo ip");
+
+      }else{
+         //se gurdan las ip y los puertos
+         ipAddress = QHostAddress(ui->ipAddress->text());
+         port = ui->port->value();
+         //myUdpSocket->bind(ipAddress, port);
+         QMessageBox::information(this, "Chat", "Conectando...");
+      }
 
 }
 
 void MainWindow::on_sendButton_clicked()
 {
-
+    myUdpSocket->writeDatagram(ui->message->text().toLatin1(), ipAddress, port);
+    ui->message->clear();
 }
