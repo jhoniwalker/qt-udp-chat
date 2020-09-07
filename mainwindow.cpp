@@ -22,14 +22,15 @@ MainWindow::MainWindow(QWidget *parent)
     //-------------------------
     //Realizo en bindeo de la ip y el puerto del servidor.
     //Para que funcionen en direfentes máquinas deben tener diferentes puertos
-    myUdpSocket->bind(QHostAddress(listDir.at(1).toString()), 7755);
+    myUdpSocket->bind(QHostAddress("192.168.0.12"), 7755);
 
     //se hace una conección con el socket y la señal listo para leer
     connect(myUdpSocket, SIGNAL(readyRead()),this,SLOT(readSocket()));
 
     //seteo el editor de texto plano para que sea de solo lectura.
     ui->receivedMessages->setReadOnly(true);
-    ui->receivedMessages->appendPlainText("Mi dirección IP es: "+ QHostAddress(listDir.at(1).toString()).toString());
+    ui->receivedMessages->appendPlainText("Provea a su contacto de la siguiente información");
+    ui->receivedMessages->appendPlainText("Mi dirección IP es: "+ QHostAddress("192.168.0.12").toString());
     ui->receivedMessages->appendPlainText("Mi puerto es: "+QString("%1").arg(7755));
     connect(ui->message,SIGNAL(returnPresse()),this,SLOT(on_sendButton_clicked()));
 
