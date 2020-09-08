@@ -3,6 +3,7 @@
 #include <QUdpSocket>
 #include <QMessageBox>
 #include <QHostInfo>
+#include <QRandomGenerator>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -15,24 +16,38 @@ MainWindow::MainWindow(QWidget *parent)
     myUdpSocket = new QUdpSocket(this);
 
     //obtengo datos de mi host y me quedo con la dirección ip
+    QString localhostIP;
     QList <QHostAddress> listDir = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
-       //for (int i = 0; i < list.size(); i++)
-          //qDebug() << list.at(i).toString();
-    qDebug() << listDir.at(1).toString();
-    //-------------------------
-    //Realizo en bindeo de la ip y el puerto del servidor.
-    //Para que funcionen en direfentes máquinas deben tener diferentes puertos
-    myUdpSocket->bind(QHostAddress("192.168.0.12"), 7755);
 
-    //se hace una conección con el socket y la señal listo para leer
+    foreach (const QHostAddress& address, listDir) {
+           if (address.protocol() == QAbstractSocket::IPv4Protocol && address.isLoopback() == false) {
+                localhostIP = address.toString();
+           }
+       }
+    //qDebug() << localhostIP;
+
+    //Genero un puerto de forma randómica
+    quint16 randPort = QRandomGenerator::global()->generate();
+
+    //qDebug() << randPort;
+    /*Realizo el bindeo de la ip y el puerto del servidor.
+    Así se prepara a la aplicación para trabajar como servidor.
+    Para que funcionen en direfentes máquinas deben tener diferentes puertos.*/
+    myUdpSocket->bind(QHostAddress(localhostIP), randPort);
+
+    //se hace una conexión con el socket y la señal listo para leer
     connect(myUdpSocket, SIGNAL(readyRead()),this,SLOT(readSocket()));
 
     //seteo el editor de texto plano para que sea de solo lectura.
     ui->receivedMessages->setReadOnly(true);
+
+    //Muestro datos del servidor para que los contactos se puedan conectar.
     ui->receivedMessages->appendPlainText("Provea a su contacto de la siguiente información");
-    ui->receivedMessages->appendPlainText("Mi dirección IP es: "+ QHostAddress("192.168.0.12").toString());
-    ui->receivedMessages->appendPlainText("Mi puerto es: "+QString("%1").arg(7755));
-    connect(ui->message,SIGNAL(returnPresse()),this,SLOT(on_sendButton_clicked()));
+    ui->receivedMessages->appendPlainText("Mi dirección IP es: "+ QHostAddress(localhostIP).toString());
+    ui->receivedMessages->appendPlainText("Mi puerto es: "+QString("%1").arg(randPort));
+
+    //Se realiza una conexión con el input de envio de mensaje y la señal de la tecla enter.
+    connect(ui->message,SIGNAL(returnPressed()),this,SLOT(on_sendButton_clicked()));
 
 
 
@@ -63,7 +78,7 @@ void MainWindow::readSocket()
         myUdpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
         //se despliega la información en el texto plano
-        ui->receivedMessages->appendPlainText(QString(datagram)+"(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" );
+        ui->receivedMessages->appendPlainText(QString(datagram)+ "(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" );
     }
 }
 
