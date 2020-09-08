@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("UDP SOCKET CHAT");
+    //qDebug() << this->size();
+    this->setFixedSize(430,381);
 
     myUdpSocket = new QUdpSocket(this);
 
@@ -24,12 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
                 localhostIP = address.toString();
            }
        }
-    //qDebug() << localhostIP;
+
 
     //Genero un puerto de forma randómica
     quint16 randPort = QRandomGenerator::global()->generate();
 
-    //qDebug() << randPort;
+
     /*Realizo el bindeo de la ip y el puerto del servidor.
     Así se prepara a la aplicación para trabajar como servidor.
     Para que funcionen en direfentes máquinas deben tener diferentes puertos.*/
@@ -78,7 +80,7 @@ void MainWindow::readSocket()
         myUdpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
         //se despliega la información en el texto plano
-        ui->receivedMessages->appendPlainText(QString(datagram)+ "(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" );
+        ui->receivedMessages->appendPlainText(QString(datagram) +"(ip -> "+sender.toString()+" : port -> "+QString("%1").arg(senderPort) + ")" );
     }
 }
 
