@@ -4,7 +4,6 @@
 #include <QMessageBox>
 #include <QHostInfo>
 #include <QRandomGenerator>
-#include <QNetworkInterface>
 #include "util.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -17,47 +16,15 @@ MainWindow::MainWindow(QWidget *parent)
     this->setFixedSize(430,381);
 
     myUdpSocket = new QUdpSocket(this);
-    //funciona para linux
-    //QList<QNetworkInterface> interfceList = QNetworkInterface::allInterfaces();
-    //------------------LINUX---------------------------------------
-        QString ipAddress;
-        QNetworkInterface wifi;
-        // Get WiFi interface
-         QList<QNetworkInterface> interfceList = QNetworkInterface::allInterfaces();
-         for (int i = 0; i < interfceList.size(); ++i)
-         {
 
-             if (interfceList.at(i).name().contains("wireless") && interfceList.at(0).isValid() && interfceList.at(i).IsUp)
-             {
-                 //qDebug() << "Interfaces:" << i << interfceList.at(i).name() << " / " << interfceList.at(i).humanReadableName();
-                 wifi = interfceList.at(i);
-                break;
-             }
+    util myutil;
+    QString localhostIP = myutil.getIpHost();
+    if (localhostIP == ""){
+        localhostIP = myutil.getWifiIP();
+    }
+    qDebug() << myutil.getWifiIP();
 
-         }
 
-        QList<QHostAddress> ipAddressesList = wifi.allAddresses();
-        // use the first non-localhost IPv4 address
-        for (int i = 0; i < ipAddressesList.size(); ++i) {
-            if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
-                ipAddressesList.at(i).toIPv4Address() ) {
-                ipAddress = ipAddressesList.at(i).toString();
-                //qDebug() << "Using following IP Address:" << ipAddress;
-                break;
-            }
-        }
-        qDebug() << ipAddress;
-    //---------------------------------------------------------------
-    //obtengo datos de mi host y me quedo con la dirección ip
-    QString localhostIP;
-    QList <QHostAddress> listDir = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
-    qDebug() << listDir;
-    foreach (const QHostAddress& address, listDir) {
-           if (address.protocol() == QAbstractSocket::IPv4Protocol && address.isLoopback() == false) {
-                localhostIP = address.toString();
-           }
-       }
-    qDebug() << localhostIP;
 
     //Genero un puerto de forma randómica
     quint16 randPort = QRandomGenerator::global()->generate();

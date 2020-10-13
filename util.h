@@ -1,11 +1,15 @@
-#include "util.h"
-#include <QHostInfo>
+#ifndef UTIL_H
+#define UTIL_H
+#include <QString>
 #include <QNetworkInterface>
+#include <QHostInfo>
 
-util::util()
+class util
 {
-    util::getWifiIP(){
-
+public:
+    util();
+    //Esta funcion devuelve la ip de la interface wifi. funciona para Linux Debian.
+    QString getWifiIP(){
         QString ipAddress;
         QNetworkInterface wifi;
         // Get WiFi interface
@@ -35,4 +39,20 @@ util::util()
         //qDebug() << "getBroadWiFiAddress" << ipAddress;
         return ipAddress;
     }
-}
+
+    // Esta funcion devuelve la ip de la maquina. Funciona para windows.
+    QString getIpHost(){
+        QString localhostIP;
+        QList <QHostAddress> listDir = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
+        qDebug() << listDir;
+        foreach (const QHostAddress& address, listDir) {
+               if (address.protocol() == QAbstractSocket::IPv4Protocol && address.isLoopback() == false) {
+                    localhostIP = address.toString();
+               }
+           }
+
+        return localhostIP;
+    }
+};
+
+#endif // UTIL_H
