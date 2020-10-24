@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QHostInfo>
 #include <QRandomGenerator>
-
+#include "util.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,15 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     myUdpSocket = new QUdpSocket(this);
 
-    //obtengo datos de mi host y me quedo con la dirección ip
-    QString localhostIP;
-    QList <QHostAddress> listDir = QHostInfo::fromName(QHostInfo::localHostName()).addresses();
+    util myutil;
+    QString localhostIP = myutil.getIpHost();
+    if (localhostIP == ""){
+        localhostIP = myutil.getWifiIP();
+    }
+    qDebug() << myutil.getWifiIP();
 
-    foreach (const QHostAddress& address, listDir) {
-           if (address.protocol() == QAbstractSocket::IPv4Protocol && address.isLoopback() == false) {
-                localhostIP = address.toString();
-           }
-       }
 
 
     //Genero un puerto de forma randómica
