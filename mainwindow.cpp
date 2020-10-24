@@ -32,9 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     quint16 randPort = QRandomGenerator::global()->generate();
 
 
-    /*Realizo el bindeo de la ip y el puerto del servidor.
+    /*Realizo el bindeo de la ip y el puerto al socket.
     Así se prepara a la aplicación para trabajar como servidor.
-    Para que funcionen en direfentes máquinas deben tener diferentes puertos.*/
+    La aplicación está preparada para recibir datos.*/
     myUdpSocket->bind(QHostAddress(localhostIP), randPort);
 
     //se hace una conexión con el socket y la señal listo para leer
