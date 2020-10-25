@@ -43,22 +43,33 @@ QPushButton {
 
 QPushButton:hover {
    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #dadbde, stop: 1 #BDBDBD);
-	color: rgb(117, 117, 117);
+                                      stop: 0 #dadbde, stop: 1 #6c82fb);
+	
 }
 
 QPushButton:pressed {
    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                      stop: 0 #dadbde, stop: 1 #BDBDBD);
+                                      stop: 0 #dadbde, stop: 1 #a3b1ff);
+	color: rgb(117, 117, 117);
 }
 
 QLineEdit {
     border-radius: 2px;
     padding: 0 8px;
-    background: yellow;
     selection-background-color: darkgray;
 }
 QLineEdit:hover{border: 1px solid gray;}
+
+QPlainTextEdit {
+    border-radius: 2px;
+    padding: 0 8px;
+    background: yellow;
+    selection-background-color: darkgray;
+}
+
+QPlainTextEdit:hover {
+   border: 1px solid gray;
+}
 </string>
    </property>
    <widget class="QLabel" name="label_3">
