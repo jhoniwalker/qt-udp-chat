@@ -5,6 +5,8 @@
 #include <QHostInfo>
 #include <QRandomGenerator>
 #include "util.h"
+#include "QFileDialog"
+#include "QFile"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("UDP SOCKET CHAT");
     //qDebug() << this->size();
-    this->setFixedSize(430,381);
+    this->setFixedSize(430,581);
 
     myUdpSocket = new QUdpSocket(this);
 
@@ -102,4 +104,27 @@ void MainWindow::on_sendButton_clicked()
 {
     myUdpSocket->writeDatagram(ui->message->text().toLatin1(), ipAddress, port);
     ui->message->clear();
+}
+
+void MainWindow::on_openFileButton_clicked()
+{
+    file = QFileDialog::getOpenFileName(this, "Open A File", "C://");
+    ui->label_7->setText(file);
+      //qDebug() << file;
+}
+
+void MainWindow::on_sendButton_2_clicked()
+{
+    QByteArray contenido;
+
+    a.setFileName(file);
+
+    a.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    if (!a.isOpen()){
+        qDebug() << "El archivo no se abrió";
+    }
+
+    contenido = a.readAll();
+    myUdpSocket->writeDatagram(contenido, ipAddress, port);
 }

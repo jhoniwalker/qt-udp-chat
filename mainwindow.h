@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QHostAddress>
 #include <QUdpSocket>
+#include <QFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,11 +26,17 @@ private slots:
 
     void on_sendButton_clicked();
 
+    void on_openFileButton_clicked();
+
+    void on_sendButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     //defino variable myUdpSocket como puntero de tipo QUdpSocket
     QUdpSocket *myUdpSocket;
     QHostAddress ipAddress;
     quint16 port;
+    QString file;
+    QFile a;
 };
 #endif // MAINWINDOW_H
